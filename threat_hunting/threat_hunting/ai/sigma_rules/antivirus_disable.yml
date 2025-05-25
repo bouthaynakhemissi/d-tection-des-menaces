@@ -1,0 +1,34 @@
+title: Tentative de désactivation d'antivirus
+id: 123e4567-e89b-12d3-a456-426614174000
+status: test
+description: Détecte les tentatives de désactivation des logiciels antivirus
+author: VotreNom
+date: 2025/05/20
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        CommandLine|contains|all:
+            - 'taskkill'
+            - '/f'
+            - '/im'
+            - '|contains':
+                - 'avast'
+                - 'avg'
+                - 'avira'
+                - 'bitdefender'
+                - 'kaspersky'
+                - 'mcafee'
+                - 'norton'
+                - 'symantec'
+                - 'windows defender'
+                - 'microsoft security'
+                - 'eset'
+                - 'trend micro'
+    condition: selection
+level: high
+tags:
+    - attack.defense_evasion
+    - attack.t1482  # Domain Trust Modification
+    - attack.t1089  # Disabling Security Tools
