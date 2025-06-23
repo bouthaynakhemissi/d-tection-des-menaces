@@ -9,7 +9,7 @@ import torch
 class SecurityAIAssistant:
     def __init__(self):
         self.model_name = "microsoft/CodeGPT-small-py"  # Modèle adapté au code et règles de sécurité
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if hasattr(torch, "cuda") and torch.cuda.is_available() else "cpu"
         self.load_models()
         self.load_knowledge_base()
         

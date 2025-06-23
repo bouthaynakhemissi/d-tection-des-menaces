@@ -67,12 +67,23 @@ const Notifications = () => {
   const open = Boolean(anchorEl);
 
   const getAuthToken = () => {
-    return localStorage.getItem('token') || localStorage.getItem('access');
+    return localStorage.getItem('access') || localStorage.getItem('token');
   };
 
+  // Récupérer les notifications avec authentification
   const fetchNotifications = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/user_notifications/`);
+      const token = getAuthToken();
+      if (!token) {
+        setError("Vous n'êtes pas authentifié.");
+        setLoading(false);
+        return;
+      }
+      const response = await axios.get(`${API_BASE_URL}/user_notifications/`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        withCredentials: true
+      });
       const data = Array.isArray(response.data)
         ? response.data
         : Array.isArray(response.data?.results)
@@ -80,15 +91,13 @@ const Notifications = () => {
           : [];
       setNotifications(data);
       filterNotifications(data, tabValue);
-    } 
-    catch (err) {
+    } catch (err) {
       console.error('Erreur lors du chargement des notifications:', err, err.response?.data);
       setError(err.response?.data?.error || err.response?.data?.detail || 'Impossible de charger les notifications');
       showSnackbar(err.response?.data?.error || err.response?.data?.detail || 'Erreur lors du chargement des notifications', 'error');
       setNotifications([]);
       setFilteredNotifications([]);
-    } 
-    finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -96,10 +105,7 @@ const Notifications = () => {
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line
-  }, []);
-
+    return () => clearInterval(interval);  }, []);
   const filterNotifications = (notifs, type = 'all') => {
     const data = Array.isArray(notifs)
       ? notifs

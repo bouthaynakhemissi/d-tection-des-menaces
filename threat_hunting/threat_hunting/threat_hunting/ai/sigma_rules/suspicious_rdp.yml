@@ -1,0 +1,33 @@
+title: Connexion RDP suspecte
+id: 123e4567-e89b-12d3-a456-426614174001
+status: test
+description: Détecte les connexions RDP suspectes (hors heures de bureau, multiples échecs, etc.)
+author: VotreNom
+date: 2025/05/20
+logsource:
+    product: windows
+    service: security
+    eventid: 4624  # Successful logon
+detection:
+    selection:
+        EventID: 4624
+        LogonType: '10'  # RDP
+        LogonProcessName: 'User32'
+    filter1:
+        TargetUserName: 
+            - 'ANONYMOUS LOGON'
+            - 'SYSTEM'
+            - 'LOCAL SERVICE'
+            - 'NETWORK SERVICE'
+    filter2:
+        SourceNetworkAddress: 
+            - '0.0.0.0'
+            - '127.0.0.1'
+            - '::1'
+    timeframe: '09:00-17:00'
+    condition: selection and not filter1 and not filter2 and not 1 of timeframe*
+level: medium
+tags:
+    - attack.initial_access
+    - attack.t1078  # Valid Accounts
+    - attack.t1021.001  # Remote Desktop Protocol

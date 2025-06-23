@@ -77,6 +77,24 @@ function RapportsList({ onRefresh }) {
 
   doc.save(`${selectedRapport.titre || "rapport"}.pdf`);
 };
+// Ajoute ceci dans ton composant RapportsList.js, avant le return
+const supprimer = async (rapportId) => {
+  if (!window.confirm("Voulez-vous vraiment supprimer ce rapport ?")) return;
+  try {
+    const response = await fetch(`http://localhost:8000/rapport/supprimer/${rapportId}/`, 
+      { method: "POST", credentials: "include" }
+    );
+    const text = await response.text();
+    console.log("Réponse suppression :", response.status, text);
+    if (response.ok) {
+      setRapports((prev) => prev.filter((r) => r.id !== rapportId));
+    } else {
+      alert("Erreur lors de la suppression : " + text);
+    }
+  } catch (error) {
+    alert("Erreur réseau.");
+  }
+};
 
   return (
     <Box sx={{ width: '100%', overflow: 'hidden' }}>
@@ -133,6 +151,16 @@ function RapportsList({ onRefresh }) {
                         Voir
                       </Button>
                     </TableCell>
+                    <TableCell>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => supprimer(rapport.id)}
+                    >
+                      supprimer
+                    </Button>
+                    </TableCell>
+                    
                   </TableRow>
                 ))
               )}

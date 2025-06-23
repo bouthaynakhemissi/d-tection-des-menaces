@@ -1,0 +1,18 @@
+title: Suspicious PowerShell Command Line
+id: 123e4567-e89b-12d3-a456-426614174000
+status: test
+description: Détecte les commandes PowerShell potentiellement malveillantes
+author: Test
+date: 2025/05/20
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: "4688"
+        NewProcessName: '*powershell.exe'
+        CommandLine: '*-nop*'
+    condition: selection
+level: high
+tags:
+    - attack.execution

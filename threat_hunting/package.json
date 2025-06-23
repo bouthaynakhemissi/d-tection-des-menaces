@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "axios": "^1.9.0",
-    "proxy": "http://localhost:8000"
+    "proxy": "http://localhost:8000",
+    "@mui/material": "^5.x.x",
+"@mui/icons-material": "^5.x.x"
   }
 }

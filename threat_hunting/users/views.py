@@ -27,6 +27,8 @@ from threat_hunting.ai.sigma_analyzer import SigmaAnalyzer
 import yara
 from pathlib import Path
 from rest_framework.permissions import AllowAny
+from django.shortcuts import get_object_or_404, redirect
+from .models import Rapport  
 # --- Vues APIView ---
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -204,7 +206,7 @@ def send_alert_email(subject, message, recipient_list):
     )
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def user_notifications(request):
     notifications = Notification.objects.all().order_by('-created_at')
     serializer = NotificationSerializer(notifications, many=True)
@@ -627,3 +629,13 @@ def create(self, request, *args, **kwargs):
 class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
+
+
+
+@csrf_exempt  # Pour tester rapidement, mais il vaut mieux gérer le CSRF proprement ensuite
+def supprimer_rapport(request, rapport_id):
+    if request.method == "POST":
+        rapport = get_object_or_404(Rapport, id=rapport_id)
+        rapport.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)

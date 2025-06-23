@@ -79,7 +79,7 @@ function AddRapports({ onRefresh, onClose, showButton = true }) {
 
     
 
-      await axios.post('http://localhost:8000/get-rapports/', formData, {
+      await axios.post('http://localhost:8000/rapports/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('access')}`
