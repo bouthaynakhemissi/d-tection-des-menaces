@@ -1,0 +1,6 @@
+Bonjour {{ user.username }},
+
+{{ message }}
+
+Cordialement,
+L’équipe Threat Hunting
