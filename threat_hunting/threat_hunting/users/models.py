@@ -1,4 +1,8 @@
-from typing import Self
+import sys
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
