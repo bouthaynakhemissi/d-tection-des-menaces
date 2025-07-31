@@ -11,18 +11,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r threat_hunting/requirements.txt
+          # Installer les dépendances ML si le fichier existe
+          if [ -f threat_hunting/requirements_ml.txt ]; then 
+            pip install -r threat_hunting/requirements_ml.txt
+          fi
+          
       - name: Run Django tests
         run: |
           cd threat_hunting
           python manage.py test
+          
+      - name: Run Security Analyzer tests
+        run: |
+          cd threat_hunting
+          python -m unittest ai/tests/test_security_analyzer.py -v
 
   frontend:
     runs-on: ubuntu-latest

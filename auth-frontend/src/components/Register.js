@@ -4,7 +4,7 @@ import axiosInstance from '../context/axiosInstance';
 import {
   Box, Button, TextField, Typography, Paper, Checkbox, FormControlLabel, Alert
 } from '@mui/material';
-
+import securityBg from '../assets/arriere-plan.png';
 function Register() {
   const [form, setForm] = useState({
     username: '',  // Changé de 'name' à 'username' pour correspondre à l'API
@@ -87,7 +87,9 @@ function Register() {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#f5f6fa',
+        backgroundImage: `url(${securityBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

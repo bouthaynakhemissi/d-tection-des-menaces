@@ -1,15 +1,57 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 
+// Palette de couleurs de sécurité
+const colors = {
+  primary: '#2563eb',
+  secondary: '#1e40af',
+  success: '#10b981',
+  warning: '#f59e0b',
+  error: '#ef4444',
+  info: '#3b82f6',
+  background: '#f8fafc',
+  surface: '#edf2f7',
+  text: '#1f2937',
+  border: '#e2e8f0',
+  hover: '#cbd5e1',
+  focus: '#60a5fa',
+  icon: '#6b7280',
+  active: '#3b82f6',
+  disabled: '#d1d5db',
+  shadow: 'rgba(0, 0, 0, 0.1)',
+  gradient1: '#6366f1',
+  gradient2: '#4338ca',
+  gradient3: '#3730a3',
+  securityBackground: '#f0f7ff',
+  securityPattern: '#e0f2fe'
+};
+
+const SecurityPattern = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: ${colors.securityBackground};
+  background-image: 
+    radial-gradient(circle at 20% 20%, ${colors.securityPattern} 1px, transparent 1px),
+    radial-gradient(circle at 80% 80%, ${colors.securityPattern} 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, ${colors.securityPattern} 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: -1;
+`;
+
 const ChatContainer = styled.div`
   position: fixed;
-  bottom: 100px;
+  bottom: 120px;
   right: 30px;
-  width: 320px;
-  height: 420px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  height: 500px;
+  background: ${colors.surface};
+  border-radius: 16px;
+  box-shadow: 0 12px 40px ${colors.shadow};
   display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
   flex-direction: column;
   z-index: 1000;
@@ -17,41 +59,77 @@ const ChatContainer = styled.div`
   transition: all 0.3s ease;
   
   @media (max-width: 480px) {
-    width: 90%;
-    right: 5%;
-    bottom: 20px;
-    height: 70vh;
+    width: 95%;
+    right: 2.5%;
+    bottom: 30px;
+    height: 80vh;
   }
 `;
 
 const ChatHeader = styled.div`
-  background: #2c3e50;
+  background: linear-gradient(135deg, ${colors.gradient1}, ${colors.gradient2});
   color: white;
-  padding: 15px;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  border-radius: 16px 16px 0 0;
+  transition: background 0.3s ease;
+  font-size: 1.2rem;
+  
+  &:hover {
+    background: linear-gradient(135deg, ${colors.gradient2}, ${colors.gradient3});
+  }
 `;
 
 const ChatBody = styled.div`
   flex: 1;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  background: ${colors.background};
+  border-radius: 0 0 16px 16px;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: ${colors.surface};
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.border};
+    border-radius: 4px;
+  }
 `;
 
 const Message = styled.div`
-  max-width: 80%;
-  padding: 10px 15px;
-  border-radius: 15px;
-  margin-bottom: 10px;
+  max-width: 85%;
+  padding: 15px 20px;
+  border-radius: 20px;
+  margin-bottom: 15px;
   word-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.6;
   ${props => props.isUser ? 
-    'align-self: flex-end; background: #2c3e50; color: white;' : 
-    'align-self: flex-start; background: #f1f1f1; color: #333;'}
+    `align-self: flex-end; 
+     background: ${colors.primary}; 
+     color: white;
+     border: 1px solid ${colors.focus};` : 
+    `align-self: flex-start; 
+     background: ${colors.surface}; 
+     color: ${colors.text};
+     border: 1px solid ${colors.border};`}
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px ${colors.shadow};
+  }
 `;
 
 const FileInput = styled.input`
@@ -59,65 +137,83 @@ const FileInput = styled.input`
 `;
 
 const FileInputLabel = styled.label`
-  background: #2c3e50;
+  background: ${colors.primary};
   color: white;
-  padding: 8px 15px;
-  border-radius: 20px;
+  padding: 10px 20px;
+  border-radius: 24px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   margin-right: 10px;
-  font-size: 14px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  
   &:hover {
-    background: #1a252f;
+    background: ${colors.secondary};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px ${colors.shadow};
   }
 `;
 
 const InputContainer = styled.div`
   display: flex;
-  padding: 10px;
-  border-top: 1px solid #eee;
+  padding: 15px;
+  border-top: 1px solid ${colors.border};
   align-items: center;
+  background: ${colors.surface};
 `;
 
 const Input = styled.input`
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  padding: 12px 18px;
+  border: 1px solid ${colors.border};
+  border-radius: 24px;
   outline: none;
   margin-right: 10px;
+  background: ${colors.background};
+  color: ${colors.text};
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: ${colors.focus};
+    box-shadow: 0 0 0 3px ${colors.focus};
+  }
 `;
 
 const SendButton = styled.button`
-  background: #2c3e50;
+  background: ${colors.primary};
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+  
   &:hover {
-    background: #1a252f;
+    background: ${colors.secondary};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px ${colors.shadow};
   }
 `;
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 30px;
+  bottom: 40px;
   right: 30px;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, ${colors.gradient1}, ${colors.gradient2});
   color: white;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  font-size: 24px;
+  box-shadow: 0 12px 40px ${colors.shadow};
+  font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -125,8 +221,9 @@ const FloatingButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover {
-    background-color: #45a049;
+    background: linear-gradient(135deg, ${colors.gradient2}, ${colors.gradient3});
     transform: scale(1.1);
+    box-shadow: 0 16px 50px ${colors.shadow};
   }
 `;
 
@@ -440,6 +537,7 @@ const Chatbot = () => {
         {isOpen ? '✕' : '💬'}
       </FloatingButton>
       <ChatContainer isOpen={isOpen}>
+        <SecurityPattern />
         <ChatHeader onClick={() => setIsOpen(!isOpen)}>
           <span>Assistant Sécurité</span>
           <span>{isOpen ? '−' : '+'}</span>
